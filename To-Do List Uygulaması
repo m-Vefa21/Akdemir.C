@@ -1,0 +1,141 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <locale.h>
+
+#define MAX_TASKS 100
+#define MAX_NAME_LENGTH 100
+
+struct Task {
+    char name[MAX_NAME_LENGTH];
+    int priority;
+    int completed;
+};
+
+struct TaskList {
+    struct Task tasks[MAX_TASKS];
+    int task_count;
+};
+
+void displayMenu() {
+    printf("\n----- TO-DO LİST UYGULAMASI -----\n");
+    printf("1. Yeni Görev Ekle\n");
+    printf("2. Görev Durumunu İşaretle\n");
+    printf("3. Görev Düzenle\n");
+    printf("4. Görev Sil\n");
+    printf("5. Görevleri Listele\n");
+    printf("6. Çıkış\n");
+    printf("Seçiminizi yapın: ");
+}
+
+void addTask(struct TaskList *list) {
+    if (list->task_count < MAX_TASKS) {
+        struct Task newTask;
+        printf("Yeni görev adını girin: ");
+        scanf("%s", newTask.name);
+        printf("Öncelik seviyesini girin (1-5): ");
+        scanf("%d", &newTask.priority);
+        newTask.completed = 0;
+
+        list->tasks[list->task_count] = newTask;
+        list->task_count++;
+
+        printf("Görev eklendi.\n");
+    } else {
+        printf("Maksimum görev sayısına ulaşıldı. Daha fazla görev ekleyemezsiniz.\n");
+    }
+}
+
+void markTaskCompleted(struct TaskList *list) {
+    int taskIndex;
+    printf("İşaretlemek istediğiniz görevin numarasını girin: ");
+    scanf("%d", &taskIndex);
+
+    if (taskIndex > 0 && taskIndex <= list->task_count) {
+        list->tasks[taskIndex - 1].completed = 1;
+        printf("Görev tamamlandı.\n");
+    } else {
+        printf("Geçersiz görev numarası.\n");
+    }
+}
+
+void editTask(struct TaskList *list) {
+    int taskIndex;
+    printf("Düzenlemek istediğiniz görevin numarasını girin: ");
+    scanf("%d", &taskIndex);
+
+    if (taskIndex > 0 && taskIndex <= list->task_count) {
+        struct Task *task = &list->tasks[taskIndex - 1];
+        printf("Yeni görev adını girin: ");
+        scanf("%s", task->name);
+        printf("Yeni öncelik seviyesini girin (1-5): ");
+        scanf("%d", &task->priority);
+
+        printf("Görev düzenlendi.\n");
+    } else {
+        printf("Geçersiz görev numarası.\n");
+    }
+}
+
+void deleteTask(struct TaskList *list) {
+    int taskIndex;
+    printf("Silmek istediğiniz görevin numarasını girin: ");
+    scanf("%d", &taskIndex);
+
+    if (taskIndex > 0 && taskIndex <= list->task_count) {
+        for (int i = taskIndex - 1; i < list->task_count - 1; i++) {
+            list->tasks[i] = list->tasks[i + 1];
+        }
+        list->task_count--;
+
+        printf("Görev silindi.\n");
+    } else {
+        printf("Geçersiz görev numarası.\n");
+    }
+}
+
+void displayTasks(struct TaskList list) {
+    printf("\n----- GÖREV LİSTESİ -----\n");
+    for (int i = 0; i < list.task_count; i++) {
+        struct Task task = list.tasks[i];
+        printf("%d. [%s] %s - Öncelik: %d\n", i + 1, task.completed ? "X" : " ", task.name, task.priority);
+    }
+}
+
+int main() {
+    setlocale(LC_ALL, ""); 
+
+    struct TaskList taskList;
+    taskList.task_count = 0;
+
+    int choice;
+    do {
+        displayMenu();
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                addTask(&taskList);
+                break;
+            case 2:
+                markTaskCompleted(&taskList);
+                break;
+            case 3:
+                editTask(&taskList);
+                break;
+            case 4:
+                deleteTask(&taskList);
+                break;
+            case 5:
+                displayTasks(taskList);
+                break;
+            case 6:
+                printf("Uygulama kapatılıyor...\n");
+                break;
+            default:
+                printf("Geçersiz seçenek. Lütfen tekrar deneyin.\n");
+        }
+    } while (choice != 6);
+
+    return 0;
+}
