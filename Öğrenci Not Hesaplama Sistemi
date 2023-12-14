@@ -1,0 +1,67 @@
+#include <stdio.h>
+
+struct Ogrenci {
+    char ad[50];
+    char soyad[50];
+    int numara;
+};
+
+struct Ders {
+    char ad[50];
+    float not;
+};
+
+int main() {
+    int ogrenci_sayisi, ders_sayisi;
+
+    printf("Ogrenci sayisini girin: ");
+    scanf("%d", &ogrenci_sayisi);
+
+    printf("Ders sayisini girin: ");
+    scanf("%d", &ders_sayisi);
+
+    struct Ogrenci ogrenciler[ogrenci_sayisi];
+
+    struct Ders dersler[ogrenci_sayisi][ders_sayisi];
+
+    for (int i = 0; i < ogrenci_sayisi; i++) {
+        printf("\n%d. ogrencinin adini soyadini ve numarasini girin:\n", i + 1);
+        scanf("%s %s %d", ogrenciler[i].ad, ogrenciler[i].soyad, &ogrenciler[i].numara);
+
+        for (int j = 0; j < ders_sayisi; j++) {
+            printf("Notlarini girin for %d. ders: ", j + 1);
+            scanf("%f", &dersler[i][j].not);
+        }
+    }
+
+    for (int i = 0; i < ogrenci_sayisi; i++) {
+        printf("\n%s %s (%d numarali ogrenci)\n", ogrenciler[i].ad, ogrenciler[i].soyad, ogrenciler[i].numara);
+
+        for (int j = 0; j < ders_sayisi; j++) {
+            printf("Ders %d Notu: %.2f\n", j + 1, dersler[i][j].not);
+        }
+
+        float genel_ortalama = 0;
+        for (int j = 0; j < ders_sayisi; j++) {
+            genel_ortalama += dersler[i][j].not;
+        }
+        genel_ortalama /= ders_sayisi;
+
+        printf("Genel Not Ortalamasi: %.2f\n", genel_ortalama);
+
+        if (genel_ortalama >= 60) {
+            printf("Durum: GECTI\n");
+        } else {
+            printf("Durum: KALDI\n");
+        }
+
+        printf("Transkript:\n");
+        for (int j = 0; j < ders_sayisi; j++) {
+            printf("Ders %d Notu: %.2f\n", j + 1, dersler[i][j].not);
+        }
+        printf("Genel Not Ortalamasi: %.2f\n", genel_ortalama);
+        printf("Durum: %s\n\n", (genel_ortalama >= 60) ? "GECTI" : "KALDI");
+    }
+
+    return 0;
+}
