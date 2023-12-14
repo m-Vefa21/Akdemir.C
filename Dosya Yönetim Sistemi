@@ -1,0 +1,131 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_NAME_LENGTH 100
+
+struct Node {
+    char name[MAX_NAME_LENGTH];
+    int isDirectory;
+    struct Node *next;
+};
+
+struct Node *head = NULL;
+
+void listContents() {
+    struct Node *current = head;
+
+    if (current == NULL) {
+        printf("Dizin bos.\n");
+        return;
+    }
+
+    while (current != NULL) {
+        if (current->isDirectory) {
+            printf("[D] %s\n", current->name);
+        } else {
+            printf("[F] %s\n", current->name);
+        }
+        current = current->next;
+    }
+}
+
+void addNode(char *name, int isDirectory) {
+    struct Node *newNode = (struct Node *)malloc(sizeof(struct Node));
+    strncpy(newNode->name, name, MAX_NAME_LENGTH);
+    newNode->isDirectory = isDirectory;
+    newNode->next = NULL;
+
+    if (head == NULL) {
+        head = newNode;
+    } else {
+        struct Node *current = head;
+        while (current->next != NULL) {
+            current = current->next;
+        }
+        current->next = newNode;
+    }
+}
+
+void deleteNode(char *name) {
+    struct Node *current = head;
+    struct Node *prev = NULL;
+
+    while (current != NULL && strcmp(current->name, name) != 0) {
+        prev = current;
+        current = current->next;
+    }
+
+    if (current == NULL) {
+        printf("Belirtilen isimde bir dizin veya dosya bulunamadi.\n");
+        return;
+    }
+
+    if (prev == NULL) {
+
+        head = current->next;
+    } else {
+
+        prev->next = current->next;
+    }
+
+    free(current);
+    printf("%s basariyla silindi.\n", name);
+}
+
+void freeMemory() {
+    struct Node *current = head;
+    struct Node *next;
+
+    while (current != NULL) {
+        next = current->next;
+        free(current);
+        current = next;
+    }
+}
+
+int main() {
+    int choice;
+    char name[MAX_NAME_LENGTH];
+
+    do {
+        printf("\n1. Dizin veya Dosya Ekle\n");
+        printf("2. Dizin Icerigini Listele\n");
+        printf("3. Dizin veya Dosya Sil\n");
+        printf("4. Cikis\n");
+        printf("Seciminizi yapin: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Eklenecek Dizin veya Dosya adini girin: ");
+                scanf("%s", name);
+                int isDirectory;
+                printf("Bu bir dizin mi? (1: Evet, 0: Hayir): ");
+                scanf("%d", &isDirectory);
+                addNode(name, isDirectory);
+                break;
+
+            case 2:
+                listContents();
+                break;
+
+            case 3:
+                printf("Silinecek Dizin veya Dosya adini girin: ");
+                scanf("%s", name);
+                deleteNode(name);
+                break;
+
+            case 4:
+                printf("Programdan cikiliyor...\n");
+                break;
+
+            default:
+                printf("Gecersiz secim. Lutfen tekrar deneyin.\n");
+        }
+    } while (choice != 4);
+
+    freeMemory();
+
+    return 0;
+}
