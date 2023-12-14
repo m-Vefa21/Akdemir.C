@@ -1,0 +1,95 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <locale.h>
+
+#define MAKSIMUM_SARKI_SAYISI 100
+#define MAKSIMUM_ISIM_UZUNLUGU 100
+
+struct Sarki {
+    char ad[MAKSIMUM_ISIM_UZUNLUGU];
+    char sanatci[MAKSIMUM_ISIM_UZUNLUGU];
+    char dosya_yolu[MAKSIMUM_ISIM_UZUNLUGU];
+};
+
+struct Playlist {
+    char ad[MAKSIMUM_ISIM_UZUNLUGU];
+    struct Sarki sarkilar[MAKSIMUM_SARKI_SAYISI];
+    int sarki_sayisi;
+};
+
+void sarkiyi_cal(struct Sarki sarki) {
+    printf("Şu Anda Çalınıyor: %s - %s\n", sarki.sanatci, sarki.ad);
+
+}
+
+void playlisti_goster(struct Playlist playlist) {
+    printf("Çalma Listesi: %s\n", playlist.ad);
+    for (int i = 0; i < playlist.sarki_sayisi; i++) {
+        printf("%d. %s - %s\n", i + 1, playlist.sarkilar[i].sanatci, playlist.sarkilar[i].ad);
+    }
+}
+
+int main() {
+    setlocale(LC_ALL, ""); 
+
+    struct Playlist benimPlaylistim;
+    strcpy(benimPlaylistim.ad, "Benim Çalma Listem");
+    benimPlaylistim.sarki_sayisi = 0;
+
+    int secim;
+    do {
+        printf("\n1. Şarkı Ekle\n");
+        printf("2. Çalma Listesini Çal\n");
+        printf("3. Çıkış\n");
+        printf("Seçiminizi yapın: ");
+        scanf("%d", &secim);
+
+        switch (secim) {
+            case 1:
+                if (benimPlaylistim.sarki_sayisi < MAKSIMUM_SARKI_SAYISI) {
+                    struct Sarki yeniSarki;
+                    printf("Şarkı adını girin: ");
+                    scanf("%s", yeniSarki.ad);
+                    printf("Sanatçı adını girin: ");
+                    scanf("%s", yeniSarki.sanatci);
+                    printf("Dosya yolunu girin: ");
+                    scanf("%s", yeniSarki.dosya_yolu);
+
+                    benimPlaylistim.sarkilar[benimPlaylistim.sarki_sayisi] = yeniSarki;
+                    benimPlaylistim.sarki_sayisi++;
+
+                    printf("Şarkı çalma listesine eklendi.\n");
+                } else {
+                    printf("Çalma listesi dolu. Daha fazla şarkı ekleyemezsiniz.\n");
+                }
+                break;
+
+            case 2:
+                if (benimPlaylistim.sarki_sayisi > 0) {
+                    playlisti_goster(benimPlaylistim);
+                    int sarkiSecimi;
+                    printf("Çalmak istediğiniz şarkının numarasını girin: ");
+                    scanf("%d", &sarkiSecimi);
+
+                    if (sarkiSecimi > 0 && sarkiSecimi <= benimPlaylistim.sarki_sayisi) {
+                        sarkiyi_cal(benimPlaylistim.sarkilar[sarkiSecimi - 1]);
+                    } else {
+                        printf("Geçersiz şarkı numarası.\n");
+                    }
+                } else {
+                    printf("Çalma listesi boş. Çalmak için şarkı ekleyin.\n");
+                }
+                break;
+
+            case 3:
+                printf("Müzik çalar kapatılıyor...\n");
+                break;
+
+            default:
+                printf("Geçersiz seçim. Lütfen tekrar deneyin.\n");
+        }
+    } while (secim != 3);
+
+    return 0;
+}
