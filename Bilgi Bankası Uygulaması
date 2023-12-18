@@ -1,0 +1,110 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <locale.h>
+
+#define MAX_BILGI_SAYISI 100
+#define MAX_BASLIK_UZUNLUK 100
+#define MAX_ICERIK_UZUNLUK 1000
+
+struct Bilgi {
+    char baslik[MAX_BASLIK_UZUNLUK];
+    char icerik[MAX_ICERIK_UZUNLUK];
+};
+
+struct BilgiBankasi {
+    struct Bilgi bilgiler[MAX_BILGI_SAYISI];
+    int bilgiSayisi;
+};
+
+void bilgiEkle(struct BilgiBankasi *banka) {
+    if (banka->bilgiSayisi >= MAX_BILGI_SAYISI) {
+        printf("Bilgi bankası dolu, yeni bilgi eklenemiyor!\n");
+        return;
+    }
+
+    printf("Başlık: ");
+    scanf(" %[^\n]", banka->bilgiler[banka->bilgiSayisi].baslik);
+
+    printf("İçerik: ");
+    scanf(" %[^\n]", banka->bilgiler[banka->bilgiSayisi].icerik);
+
+    banka->bilgiSayisi++;
+
+    printf("Bilgi eklendi!\n");
+}
+
+void bilgileriListele(const struct BilgiBankasi *banka) {
+    if (banka->bilgiSayisi == 0) {
+        printf("Bilgi bankası boş.\n");
+        return;
+    }
+
+    printf("\nBilgiler:\n");
+    for (int i = 0; i < banka->bilgiSayisi; i++) {
+        printf("------ Bilgi %d ------\n", i + 1);
+        printf("Başlık: %s\n", banka->bilgiler[i].baslik);
+        printf("İçerik: %s\n", banka->bilgiler[i].icerik);
+        printf("----------------------\n");
+    }
+}
+
+void bilgiAra(const struct BilgiBankasi *banka, const char *anahtarKelime) {
+    int bulunanSayisi = 0;
+
+    for (int i = 0; i < banka->bilgiSayisi; i++) {
+        if (strstr(banka->bilgiler[i].baslik, anahtarKelime) != NULL ||
+            strstr(banka->bilgiler[i].icerik, anahtarKelime) != NULL) {
+            printf("------ Bilgi %d ------\n", i + 1);
+            printf("Başlık: %s\n", banka->bilgiler[i].baslik);
+            printf("İçerik: %s\n", banka->bilgiler[i].icerik);
+            printf("----------------------\n");
+            bulunanSayisi++;
+        }
+    }
+
+    if (bulunanSayisi == 0) {
+        printf("Aranan kelimeye uygun bilgi bulunamadı.\n");
+    }
+}
+
+int main() {
+    setlocale(LC_ALL, "Turkish");
+
+    struct BilgiBankasi banka;
+    banka.bilgiSayisi = 0;
+
+    int secim;
+    char anahtarKelime[MAX_BASLIK_UZUNLUK];
+
+    do {
+        printf("\nBilgi Bankası Uygulaması\n");
+        printf("1. Bilgi Ekle\n");
+        printf("2. Bilgileri Listele\n");
+        printf("3. Bilgi Ara\n");
+        printf("4. Çıkış\n");
+        printf("Seçiminizi yapın: ");
+        scanf("%d", &secim);
+
+        switch (secim) {
+            case 1:
+                bilgiEkle(&banka);
+                break;
+            case 2:
+                bilgileriListele(&banka);
+                break;
+            case 3:
+                printf("Aramak istediğiniz kelimeyi girin: ");
+                scanf(" %[^\n]", anahtarKelime);
+                bilgiAra(&banka, anahtarKelime);
+                break;
+            case 4:
+                printf("Uygulama kapatılıyor. İyi günler!\n");
+                break;
+            default:
+                printf("Geçersiz seçim. Lütfen tekrar deneyin.\n");
+        }
+    } while (secim != 4);
+
+    return 0;
+}
