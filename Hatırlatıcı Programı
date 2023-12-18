@@ -1,0 +1,112 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <locale.h>
+
+#define MAX_HATIRLATMA 100
+
+struct Hatirlatma {
+    char baslik[50];
+    char tarih[20];
+    char saat[10];
+};
+
+struct Hatirlatma hatirlatmalar[MAX_HATIRLATMA];
+int hatirlatmaSayisi = 0;
+
+void hatirlatmaEkle() {
+    if (hatirlatmaSayisi >= MAX_HATIRLATMA) {
+        printf("Hatırlatıcı dolu, yeni hatırlatma eklenemiyor!\n");
+        return;
+    }
+
+    printf("Başlık: ");
+    scanf(" %[^\n]", hatirlatmalar[hatirlatmaSayisi].baslik);
+
+    printf("Tarih (GG.AA.YYYY): ");
+    scanf("%s", hatirlatmalar[hatirlatmaSayisi].tarih);
+
+    printf("Saat (HH:mm): ");
+    scanf("%s", hatirlatmalar[hatirlatmaSayisi].saat);
+
+    hatirlatmaSayisi++;
+
+    printf("Hatırlatma eklendi!\n");
+}
+
+void hatirlatmalariListele() {
+    if (hatirlatmaSayisi == 0) {
+        printf("Hatırlatıcı boş.\n");
+        return;
+    }
+
+    printf("\nHatırlatmalar:\n");
+    for (int i = 0; i < hatirlatmaSayisi; i++) {
+        printf("------ Hatırlatma %d ------\n", i + 1);
+        printf("Başlık: %s\n", hatirlatmalar[i].baslik);
+        printf("Tarih: %s\n", hatirlatmalar[i].tarih);
+        printf("Saat: %s\n", hatirlatmalar[i].saat);
+        printf("--------------------------\n");
+    }
+}
+
+void hatirlatmaBildirimi(struct Hatirlatma *hatirlatma) {
+    printf("\n------ Hatırlatma Bildirimi ------\n");
+    printf("Başlık: %s\n", hatirlatma->baslik);
+    printf("Tarih: %s\n", hatirlatma->tarih);
+    printf("Saat: %s\n", hatirlatma->saat);
+    printf("------------------------------\n");
+}
+
+void hatirlatmaKontrol() {
+    time_t simdikiZaman = time(NULL);
+    struct tm *tmYapisi = localtime(&simdikiZaman);
+
+    char simdikiTarih[20];
+    char simdikiSaat[10];
+
+    strftime(simdikiTarih, sizeof(simdikiTarih), "%d.%m.%Y", tmYapisi);
+    strftime(simdikiSaat, sizeof(simdikiSaat), "%H:%M", tmYapisi);
+
+    for (int i = 0; i < hatirlatmaSayisi; i++) {
+        if (strcmp(simdikiTarih, hatirlatmalar[i].tarih) == 0 && strcmp(simdikiSaat, hatirlatmalar[i].saat) == 0) {
+            hatirlatmaBildirimi(&hatirlatmalar[i]);
+        }
+    }
+}
+
+int main() {
+    setlocale(LC_ALL, "Turkish");
+
+    int secim;
+
+    do {
+        printf("\nHatırlatıcı Uygulaması\n");
+        printf("1. Hatırlatma Ekle\n");
+        printf("2. Hatırlatmaları Listele\n");
+        printf("3. Hatırlatma Bildirim Kontrol\n");
+        printf("4. Çıkış\n");
+        printf("Seçiminizi yapın: ");
+        scanf("%d", &secim);
+
+        switch (secim) {
+            case 1:
+                hatirlatmaEkle();
+                break;
+            case 2:
+                hatirlatmalariListele();
+                break;
+            case 3:
+                hatirlatmaKontrol();
+                break;
+            case 4:
+                printf("Uygulama kapatılıyor. İyi günler!\n");
+                break;
+            default:
+                printf("Geçersiz seçim. Lütfen tekrar deneyin.\n");
+        }
+    } while (secim != 4);
+
+    return 0;
+}
