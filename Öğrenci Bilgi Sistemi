@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+struct Ogrenci {
+    char ad[50];
+    char soyad[50];
+    int numara;
+    float not;
+    int devamsizlik;
+};
+
+
+void ogrenciEkle(struct Ogrenci ogrenciler[], int *toplamOgrenci);
+void ogrenciGuncelle(struct Ogrenci ogrenciler[], int toplamOgrenci);
+void ogrenciSil(struct Ogrenci ogrenciler[], int *toplamOgrenci);
+void notGir(struct Ogrenci ogrenciler[], int toplamOgrenci);
+void devamsizlikTakip(struct Ogrenci ogrenciler[], int toplamOgrenci);
+void ogrenciListele(struct Ogrenci ogrenciler[], int toplamOgrenci);
+
+int main() {
+    struct Ogrenci ogrenciler[100];  
+    int toplamOgrenci = 0;
+    int secim;
+
+    do {
+        printf("\n- Ogrenci Bilgi Sistemi -\n");
+        printf("1. Ogrenci Ekle\n");
+        printf("2. Ogrenci Guncelle\n");
+        printf("3. Ogrenci Sil\n");
+        printf("4. Not Gir\n");
+        printf("5. Devamsizlik Takip\n");
+        printf("6. Ogrenci Listele\n");
+        printf("0. Cikis\n");
+        printf("Seciminizi yapin: ");
+        scanf("%d", &secim);
+
+        switch (secim) {
+            case 1:
+                ogrenciEkle(ogrenciler, &toplamOgrenci);
+                break;
+            case 2:
+                ogrenciGuncelle(ogrenciler, toplamOgrenci);
+                break;
+            case 3:
+                ogrenciSil(ogrenciler, &toplamOgrenci);
+                break;
+            case 4:
+                notGir(ogrenciler, toplamOgrenci);
+                break;
+            case 5:
+                devamsizlikTakip(ogrenciler, toplamOgrenci);
+                break;
+            case 6:
+                ogrenciListele(ogrenciler, toplamOgrenci);
+                break;
+            case 0:
+                printf("Programdan cikiliyor...\n");
+                break;
+            default:
+                printf("Gecersiz secim. Tekrar deneyin.\n");
+        }
+
+    } while (secim != 0);
+
+    return 0;
+}
+
+void ogrenciEkle(struct Ogrenci ogrenciler[], int *toplamOgrenci) {
+
+}
+
+void ogrenciGuncelle(struct Ogrenci ogrenciler[], int toplamOgrenci) {
+
+}
+
+void ogrenciSil(struct Ogrenci ogrenciler[], int *toplamOgrenci) {
+
+}
+
+void notGir(struct Ogrenci ogrenciler[], int toplamOgrenci) {
+
+}
+
+void devamsizlikTakip(struct Ogrenci ogrenciler[], int toplamOgrenci) {
+
+}
+
+void ogrenciListele(struct Ogrenci ogrenciler[], int toplamOgrenci) {
+
+}
