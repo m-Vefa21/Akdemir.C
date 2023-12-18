@@ -1,0 +1,37 @@
+#include <stdio.h>
+
+void sifrele(FILE *girdi, FILE *sifreli, char anahtar) {
+    int karakter;
+    while ((karakter = fgetc(girdi)) != EOF) {
+        fputc(karakter ^ anahtar, sifreli); 
+    }
+}
+
+int main() {
+    FILE *girdiDosyasi, *sifreliDosya;
+    char dosyaAdi[100];
+    char anahtar;
+
+    printf("Dosya Adi: ");
+    scanf("%s", dosyaAdi);
+
+    girdiDosyasi = fopen(dosyaAdi, "rb");
+    sifreliDosya = fopen("sifreliDosya.txt", "wb");
+
+    if (girdiDosyasi == NULL || sifreliDosya == NULL) {
+        perror("Dosya acilirken hata olustu");
+        return 1;
+    }
+
+    printf("Sifreleme Anahtari (bir karakter): ");
+    scanf(" %c", &anahtar);
+
+    sifrele(girdiDosyasi, sifreliDosya, anahtar);
+
+    fclose(girdiDosyasi);
+    fclose(sifreliDosya);
+
+    printf("Dosya sifreleme tamamlandi. Sifreli dosya olusturuldu.\n");
+
+    return 0;
+}
