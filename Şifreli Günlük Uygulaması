@@ -1,0 +1,210 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <locale.h>
+
+#define MAX_GUNLUK 100
+#define CEASAR_SHIFT 3
+
+struct Gunluk {
+    char tarih[20];
+    char baslik[50];
+    char icerik[500];
+    int sifrelemeAnahtari;
+    int sifrelenmis;
+};
+
+struct Gunluk gunluklar[MAX_GUNLUK];
+int gunlukSayisi = 0;
+
+void ceasarSifrele(char *metin, int kaydirma) {
+    for (int i = 0; metin[i] != '\0'; i++) {
+        if (metin[i] >= 'a' && metin[i] <= 'z') {
+            metin[i] = 'a' + (metin[i] - 'a' + kaydirma) % 26;
+        } else if (metin[i] >= 'A' && metin[i] <= 'Z') {
+            metin[i] = 'A' + (metin[i] - 'A' + kaydirma) % 26;
+        }
+    }
+}
+
+void gunlukSifrele(struct Gunluk *gunluk) {
+    printf("Günlük için şifreleme anahtarı girin: ");
+    scanf("%d", &(gunluk->sifrelemeAnahtari));
+
+    ceasarSifrele(gunluk->icerik, gunluk->sifrelemeAnahtari);
+
+    gunluk->sifrelenmis = 1;
+}
+
+void gunlukCoz(struct Gunluk *gunluk) {
+    ceasarSifrele(gunluk->icerik, -gunluk->sifrelemeAnahtari);
+    gunluk->sifrelenmis = 0;
+}
+
+void gunlukEkle() {
+    if (gunlukSayisi >= MAX_GUNLUK) {
+        printf("Günlük limitine ulaşıldı, yeni günlük eklenemiyor!\n");
+        return;
+    }
+
+    printf("Tarih (GG.AA.YYYY): ");
+    scanf("%s", gunluklar[gunlukSayisi].tarih);
+
+    printf("Başlık: ");
+    scanf(" %[^\n]", gunluklar[gunlukSayisi].baslik);
+
+    printf("İçerik: ");
+    scanf(" %[^\n]", gunluklar[gunlukSayisi].icerik);
+
+    
+    gunlukSifrele(&gunluklar[gunlukSayisi]);
+
+    gunlukSayisi++;
+
+    printf("Günlük eklendi!\n");
+}
+
+void gunlukleriListele() {
+    if (gunlukSayisi == 0) {
+        printf("Günlük bulunamadı.\n");
+        return;
+    }
+
+    printf("\nGünlükler:\n");
+    for (int i = 0; i < gunlukSayisi; i++) {
+        printf("------ Günlük %d ------\n", i + 1);
+        printf("Tarih: %s\n", gunluklar[i].tarih);
+        printf("Başlık: %s\n", gunluklar[i].baslik);
+
+        if (gunluklar[i].sifrelenmis) {
+            printf("İçerik: (Şifreli)\n");
+        } else {
+            printf("İçerik: %s\n", gunluklar[i].icerik);
+        }
+
+        printf("--------------------------\n");
+    }
+}
+
+void gunlukSil() {
+    int silinecekIndex;
+    int girilenSifre;
+
+    if (gunlukSayisi == 0) {
+        printf("Silinecek günlük bulunamadı.\n");
+        return;
+    }
+
+    printf("Silinecek günlüğün sıra numarasını girin: ");
+    scanf("%d", &silinecekIndex);
+
+    if (silinecekIndex < 1 || silinecekIndex > gunlukSayisi) {
+        printf("Geçersiz sıra numarası. Silme işlemi iptal edildi.\n");
+        return;
+    }
+
+    if (gunluklar[silinecekIndex - 1].sifrelenmis) {
+        printf("Günlüğü silmek için şifreyi girin: ");
+        scanf("%d", &girilenSifre);
+
+        if (girilenSifre != gunluklar[silinecekIndex - 1].sifrelemeAnahtari) {
+            printf("Yanlış şifre. Silme işlemi iptal edildi.\n");
+            return;
+        }
+    }
+
+    for (int i = silinecekIndex - 1; i < gunlukSayisi - 1; i++) {
+        strcpy(gunluklar[i].tarih, gunluklar[i + 1].tarih);
+        strcpy(gunluklar[i].baslik, gunluklar[i + 1].baslik);
+        strcpy(gunluklar[i].icerik, gunluklar[i + 1].icerik);
+        gunluklar[i].sifrelemeAnahtari = gunluklar[i + 1].sifrelemeAnahtari;
+        gunluklar[i].sifrelenmis = gunluklar[i + 1].sifrelenmis;
+    }
+
+    gunlukSayisi--;
+
+    printf("Günlük silindi!\n");
+}
+
+void gunlukGoruntule() {
+    int goruntulenecekIndex;
+    int girilenSifre;
+
+    if (gunlukSayisi == 0) {
+        printf("Görüntülenecek günlük bulunamadı.\n");
+        return;
+    }
+
+    printf("Görüntülenecek günlüğün sıra numarasını girin: ");
+    scanf("%d", &goruntulenecekIndex);
+
+    if (goruntulenecekIndex < 1 || goruntulenecekIndex > gunlukSayisi) {
+        printf("Geçersiz sıra numarası. Görüntüleme işlemi iptal edildi.\n");
+        return;
+    }
+
+    if (gunluklar[goruntulenecekIndex - 1].sifrelenmis) {
+        printf("Günlüğü görüntülemek için şifreyi girin: ");
+        scanf("%d", &girilenSifre);
+
+        if (girilenSifre != gunluklar[goruntulenecekIndex - 1].sifrelemeAnahtari) {
+            printf("Yanlış şifre. Görüntüleme işlemi iptal edildi.\n");
+            return;
+        }
+
+
+        gunlukCoz(&gunluklar[goruntulenecekIndex - 1]);
+    }
+
+    printf("------ Günlük %d ------\n", goruntulenecekIndex);
+    printf("Tarih: %s\n", gunluklar[goruntulenecekIndex - 1].tarih);
+    printf("Başlık: %s\n", gunluklar[goruntulenecekIndex - 1].baslik);
+
+    if (gunluklar[goruntulenecekIndex - 1].sifrelenmis) {
+        printf("İçerik: %s (Şifreli)\n", gunluklar[goruntulenecekIndex - 1].icerik);
+    } else {
+        printf("İçerik: %s\n", gunluklar[goruntulenecekIndex - 1].icerik);
+    }
+
+    printf("--------------------------\n");
+}
+
+int main() {
+    setlocale(LC_ALL, "Turkish");
+
+    int secim;
+
+    do {
+        printf("\nKişisel Günlük Uygulaması\n");
+        printf("1. Günlük Ekle\n");
+        printf("2. Günlükleri Listele\n");
+        printf("3. Günlük Sil\n");
+        printf("4. Günlük Görüntüle\n");
+        printf("5. Çıkış\n");
+        printf("Seçiminizi yapın: ");
+        scanf("%d", &secim);
+
+        switch (secim) {
+            case 1:
+                gunlukEkle();
+                break;
+            case 2:
+                gunlukleriListele();
+                break;
+            case 3:
+                gunlukSil();
+                break;
+            case 4:
+                gunlukGoruntule();
+                break;
+            case 5:
+                printf("Uygulama kapatılıyor. İyi günler!\n");
+                break;
+            default:
+                printf("Geçersiz seçim. Lütfen tekrar deneyin.\n");
+        }
+    } while (secim != 5);
+
+    return 0;
+}
+
