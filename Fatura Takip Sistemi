@@ -1,0 +1,78 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <locale.h>
+
+#define MAX_BILLS 100
+
+typedef struct {
+    char name[50];
+    float amount;
+    char category[20];
+} Bill;
+
+Bill bills[MAX_BILLS];
+int billCount = 0;
+
+void addBill() {
+    if (billCount < MAX_BILLS) {
+        printf("Fatura Adı: ");
+        scanf(" %[^\n]", bills[billCount].name);
+        
+        printf("Tutar: ");
+        scanf("%f", &bills[billCount].amount);
+        
+        printf("Kategori (gelir veya gider): ");
+        scanf(" %19s", bills[billCount].category);
+        
+        billCount++;
+        printf("Fatura eklendi!\n");
+    } else {
+        printf("Fatura limitine ulaşıldı!\n");
+    }
+}
+
+void calculateTotal() {
+    float totalIncome = 0;
+    float totalExpense = 0;
+
+    for (int i = 0; i < billCount; i++) {
+        if (strcmp(bills[i].category, "gelir") == 0) {
+            totalIncome += bills[i].amount;
+        } else if (strcmp(bills[i].category, "gider") == 0) {
+            totalExpense += bills[i].amount;
+        }
+    }
+
+    printf("Toplam Gelir: %.2f\n", totalIncome);
+    printf("Toplam Gider: %.2f\n", totalExpense);
+}
+
+int main() {
+    setlocale(LC_ALL, "Turkish");
+
+    int choice;
+
+    do {
+        printf("\n1. Fatura Ekle\n");
+        printf("2. Toplam Gelir ve Gideri Hesapla\n");
+        printf("3. Çıkış\n");
+        printf("Seçim: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                addBill();
+                break;
+            case 2:
+                calculateTotal();
+                break;
+            case 3:
+                printf("Programdan çıkılıyor.\n");
+                break;
+            default:
+                printf("Geçersiz seçim. Tekrar deneyin.\n");
+        }
+    } while (choice != 3);
+
+    return 0;
+}
