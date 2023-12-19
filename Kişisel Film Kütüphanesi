@@ -1,0 +1,124 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <locale.h>
+
+#define MAX_FILMS 100
+
+typedef struct {
+    char title[100];
+    char director[50];
+    int year;
+    char genre[50];
+    int watched; 
+} Film;
+
+Film filmLibrary[MAX_FILMS];
+int filmCount = 0;
+
+void addFilm() {
+    if (filmCount < MAX_FILMS) {
+        printf("Film Adı: ");
+        scanf(" %[^\n]", filmLibrary[filmCount].title);
+
+        printf("Yönetmen: ");
+        scanf(" %[^\n]", filmLibrary[filmCount].director);
+
+        printf("Yıl: ");
+        scanf("%d", &filmLibrary[filmCount].year);
+
+        printf("Tür: ");
+        scanf(" %[^\n]", filmLibrary[filmCount].genre);
+
+        printf("İzlendi mi? (1: Evet, 0: Hayır): ");
+        scanf("%d", &filmLibrary[filmCount].watched);
+
+        filmCount++;
+        printf("Film eklendi!\n");
+    } else {
+        printf("Film kütüphanesi kapasitesi doldu!\n");
+    }
+}
+
+void listFilms() {
+    printf("\n--- Film Listesi ---\n");
+    for (int i = 0; i < filmCount; i++) {
+        printf("Film Adı: %s\n", filmLibrary[i].title);
+        printf("Yönetmen: %s\n", filmLibrary[i].director);
+        printf("Yıl: %d\n", filmLibrary[i].year);
+        printf("Tür: %s\n", filmLibrary[i].genre);
+        printf("İzlendi mi? %s\n", (filmLibrary[i].watched == 1) ? "Evet" : "Hayır");
+        printf("----------------------------\n");
+    }
+}
+
+void searchFilmsByGenre(char genre[]) {
+    printf("\n--- %s Türündeki Filmler ---\n", genre);
+    for (int i = 0; i < filmCount; i++) {
+        if (strcmp(filmLibrary[i].genre, genre) == 0) {
+            printf("Film Adı: %s\n", filmLibrary[i].title);
+            printf("Yönetmen: %s\n", filmLibrary[i].director);
+            printf("Yıl: %d\n", filmLibrary[i].year);
+            printf("İzlendi mi? %s\n", (filmLibrary[i].watched == 1) ? "Evet" : "Hayır");
+            printf("----------------------------\n");
+        }
+    }
+}
+
+void markFilmAsWatched() {
+    char title[100];
+    printf("İzlendi olarak işaretlemek istediğiniz film adını girin: ");
+    scanf(" %[^\n]", title);
+
+    for (int i = 0; i < filmCount; i++) {
+        if (strcmp(filmLibrary[i].title, title) == 0) {
+            filmLibrary[i].watched = 1;
+            printf("%s filmi izlendi olarak işaretlendi.\n", title);
+            return;
+        }
+    }
+
+    printf("Belirtilen isimde bir film bulunamadı.\n");
+}
+
+int main() {
+    setlocale(LC_ALL, "Turkish");
+
+    int choice;
+
+    do {
+        printf("\n1. Film Ekle\n");
+        printf("2. Filmleri Listele\n");
+        printf("3. Belirli Türdeki Filmleri Listele\n");
+        printf("4. İzlendi olarak İşaretle\n");
+        printf("5. Çıkış\n");
+        printf("Seçim: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                addFilm();
+                break;
+            case 2:
+                listFilms();
+                break;
+            case 3: {
+                char genre[50];
+                printf("Listelemek istediğiniz türü girin: ");
+                scanf(" %[^\n]", genre);
+                searchFilmsByGenre(genre);
+                break;
+            }
+            case 4:
+                markFilmAsWatched();
+                break;
+            case 5:
+                printf("Programdan çıkılıyor.\n");
+                break;
+            default:
+                printf("Geçersiz seçim. Tekrar deneyin.\n");
+        }
+    } while (choice != 5);
+
+    return 0;
+}
