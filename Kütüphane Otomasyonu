@@ -1,0 +1,173 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <locale.h>
+
+#define MAX_BOOKS 100
+#define MAX_USERS 10
+
+typedef struct {
+    char title[100];
+    char author[50];
+    char category[50];
+    int isAvailable; 
+} Book;
+
+typedef struct {
+    char username[20];
+    int borrowedBooks[MAX_BOOKS];
+} User;
+
+Book library[MAX_BOOKS];
+User users[MAX_USERS];
+int bookCount = 0;
+int userCount = 0;
+
+void addBook() {
+    if (bookCount < MAX_BOOKS) {
+        printf("Kitap Adı: ");
+        scanf(" %[^\n]", library[bookCount].title);
+
+        printf("Yazar: ");
+        scanf(" %[^\n]", library[bookCount].author);
+
+        printf("Kategori: ");
+        scanf(" %[^\n]", library[bookCount].category);
+
+        library[bookCount].isAvailable = 1;
+
+        bookCount++;
+        printf("Kitap eklendi!\n");
+    } else {
+        printf("Kütüphane kapasitesi doldu!\n");
+    }
+}
+
+void listBooks() {
+    printf("\n--- Kitap Listesi ---\n");
+    for (int i = 0; i < bookCount; i++) {
+        printf("Kitap Adı: %s\n", library[i].title);
+        printf("Yazar: %s\n", library[i].author);
+        printf("Kategori: %s\n", library[i].category);
+        printf("Durum: %s\n", (library[i].isAvailable == 1) ? "Mevcut" : "Ödünç Alınmış");
+        printf("----------------------------\n");
+    }
+}
+
+int findBookIndex(char *title) {
+    for (int i = 0; i < bookCount; i++) {
+        if (strcmp(library[i].title, title) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int findUserIndex(char *username) {
+    for (int i = 0; i < userCount; i++) {
+        if (strcmp(users[i].username, username) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+void borrowBook() {
+    char username[20];
+    char title[100];
+
+    printf("Kullanıcı Adı: ");
+    scanf(" %[^\n]", username);
+
+    int userIndex = findUserIndex(username);
+    if (userIndex == -1) {
+        printf("Kullanıcı bulunamadı!\n");
+        return;
+    }
+
+    printf("Kitap Adı: ");
+    scanf(" %[^\n]", title);
+
+    int bookIndex = findBookIndex(title);
+    if (bookIndex == -1) {
+        printf("Kitap bulunamadı!\n");
+        return;
+    }
+
+    if (library[bookIndex].isAvailable == 1) {
+        library[bookIndex].isAvailable = 0;
+        users[userIndex].borrowedBooks[bookIndex] = 1;
+        printf("%s kitabı %s tarafından ödünç alındı.\n", title, username);
+    } else {
+        printf("Bu kitap şu anda ödünç alınmış durumda.\n");
+    }
+}
+
+void returnBook() {
+    char username[20];
+    char title[100];
+
+    printf("Kullanıcı Adı: ");
+    scanf(" %[^\n]", username);
+
+    int userIndex = findUserIndex(username);
+    if (userIndex == -1) {
+        printf("Kullanıcı bulunamadı!\n");
+        return;
+    }
+
+    printf("Kitap Adı: ");
+    scanf(" %[^\n]", title);
+
+    int bookIndex = findBookIndex(title);
+    if (bookIndex == -1) {
+        printf("Kitap bulunamadı!\n");
+        return;
+    }
+
+    if (library[bookIndex].isAvailable == 0 && users[userIndex].borrowedBooks[bookIndex] == 1) {
+        library[bookIndex].isAvailable = 1;
+        users[userIndex].borrowedBooks[bookIndex] = 0;
+        printf("%s kitabı %s tarafından iade edildi.\n", title, username);
+    } else {
+        printf("Bu kitap zaten mevcut veya size ait değil.\n");
+    }
+}
+
+int main() {
+    setlocale(LC_ALL, "Turkish");
+
+    int choice;
+
+    do {
+        printf("\n1. Kitap Ekle\n");
+        printf("2. Kitapları Listele\n");
+        printf("3. Kitap Ödünç Al\n");
+        printf("4. Kitap İade Et\n");
+        printf("5. Çıkış\n");
+        printf("Seçim: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                addBook();
+                break;
+            case 2:
+                listBooks();
+                break;
+            case 3:
+                borrowBook();
+                break;
+            case 4:
+                returnBook();
+                break;
+            case 5:
+                printf("Programdan çıkılıyor.\n");
+                break;
+            default:
+                printf("Geçersiz seçim. Tekrar deneyin.\n");
+        }
+    } while (choice != 5);
+
+    return 0;
+}
