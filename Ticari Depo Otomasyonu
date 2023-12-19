@@ -1,0 +1,166 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <locale.h>
+
+#define MAX_PRODUCTS 100
+
+typedef struct {
+    int productID;
+    char productName[50];
+    char category[30];
+    float costPrice;
+    float sellingPrice;
+    int quantity;
+} Product;
+
+Product productInventory[MAX_PRODUCTS];
+int productCount = 0;
+
+void addProduct() {
+    if (productCount < MAX_PRODUCTS) {
+        printf("Ürün ID: ");
+        scanf("%d", &productInventory[productCount].productID);
+
+        printf("Ürün Adı: ");
+        scanf(" %[^\n]", productInventory[productCount].productName);
+
+        printf("Kategori: ");
+        scanf(" %[^\n]", productInventory[productCount].category);
+
+        printf("Maliyet Fiyatı: ");
+        scanf("%f", &productInventory[productCount].costPrice);
+
+        printf("Satış Fiyatı: ");
+        scanf("%f", &productInventory[productCount].sellingPrice);
+
+        printf("Stok Miktarı: ");
+        scanf("%d", &productInventory[productCount].quantity);
+
+        productCount++;
+
+        printf("Ürün eklendi!\n");
+    } else {
+        printf("Depo kapasitesi doldu!\n");
+    }
+}
+
+void listProducts() {
+    printf("\n--- Ürün Listesi ---\n");
+    for (int i = 0; i < productCount; i++) {
+        printf("ID: %d\n", productInventory[i].productID);
+        printf("Ürün Adı: %s\n", productInventory[i].productName);
+        printf("Kategori: %s\n", productInventory[i].category);
+        printf("Maliyet Fiyatı: %.2f\n", productInventory[i].costPrice);
+        printf("Satış Fiyatı: %.2f\n", productInventory[i].sellingPrice);
+        printf("Stok Miktarı: %d\n", productInventory[i].quantity);
+        printf("-----------------------\n");
+    }
+}
+
+void editProduct() {
+    int id;
+    printf("Düzenlemek istediğiniz ürünün ID'sini girin: ");
+    scanf("%d", &id);
+
+    for (int i = 0; i < productCount; i++) {
+        if (productInventory[i].productID == id) {
+            printf("Yeni Ürün Adı: ");
+            scanf(" %[^\n]", productInventory[i].productName);
+
+            printf("Yeni Kategori: ");
+            scanf(" %[^\n]", productInventory[i].category);
+
+            printf("Yeni Maliyet Fiyatı: ");
+            scanf("%f", &productInventory[i].costPrice);
+
+            printf("Yeni Satış Fiyatı: ");
+            scanf("%f", &productInventory[i].sellingPrice);
+
+            printf("Yeni Stok Miktarı: ");
+            scanf("%d", &productInventory[i].quantity);
+
+            printf("Ürün düzenlendi!\n");
+            return;
+        }
+    }
+
+    printf("Belirtilen ID ile bir ürün bulunamadı.\n");
+}
+
+void deleteProduct() {
+    int id;
+    printf("Silmek istediğiniz ürünün ID'sini girin: ");
+    scanf("%d", &id);
+
+    for (int i = 0; i < productCount; i++) {
+        if (productInventory[i].productID == id) {
+            for (int j = i; j < productCount - 1; j++) {
+                productInventory[j] = productInventory[j + 1];
+            }
+            productCount--;
+
+            printf("Ürün silindi!\n");
+            return;
+        }
+    }
+
+    printf("Belirtilen ID ile bir ürün bulunamadı.\n");
+}
+
+void stockControl() {
+    int id;
+    printf("Stok kontrolü yapmak istediğiniz ürünün ID'sini girin: ");
+    scanf("%d", &id);
+
+    for (int i = 0; i < productCount; i++) {
+        if (productInventory[i].productID == id) {
+            printf("Stok Miktarı: %d\n", productInventory[i].quantity);
+            return;
+        }
+    }
+
+    printf("Belirtilen ID ile bir ürün bulunamadı.\n");
+}
+
+int main() {
+    setlocale(LC_ALL, "Turkish");
+
+    int choice;
+
+    do {
+        printf("\n1. Ürün Ekle\n");
+        printf("2. Ürünleri Listele\n");
+        printf("3. Ürün Düzenle\n");
+        printf("4. Ürün Sil\n");
+        printf("5. Stok Kontrolü\n");
+        printf("6. Çıkış\n");
+        printf("Seçim: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                addProduct();
+                break;
+            case 2:
+                listProducts();
+                break;
+            case 3:
+                editProduct();
+                break;
+            case 4:
+                deleteProduct();
+                break;
+            case 5:
+                stockControl();
+                break;
+            case 6:
+                printf("Programdan çıkılıyor.\n");
+                break;
+            default:
+                printf("Geçersiz seçim. Tekrar deneyin.\n");
+        }
+    } while (choice != 6);
+
+    return 0;
+}
